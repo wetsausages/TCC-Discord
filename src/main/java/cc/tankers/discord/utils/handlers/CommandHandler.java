@@ -1,6 +1,9 @@
 package cc.tankers.discord.utils.handlers;
 
 import cc.tankers.discord.general.RemindmeHandler;
+import cc.tankers.discord.integrations.ClanIntegrationHandler;
+import cc.tankers.discord.integrations.ClanSQL;
+import cc.tankers.discord.integrations.GameIntegrationHandler;
 import cc.tankers.discord.moderation.MuteHandler;
 import cc.tankers.discord.general.PollHandler;
 import cc.tankers.discord.utils.EmbedUtil;
@@ -10,12 +13,14 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +30,7 @@ import java.util.concurrent.ExecutionException;
 public class CommandHandler {
     static InteractionHandler i = new InteractionHandler();
     public static void RegisterCommands(JDA jda) {
+        ClanSQL cSQL = new ClanSQL();
         List<CommandData> commandData = new ArrayList<>();
         // Admin commands
         // config
@@ -42,6 +48,10 @@ public class CommandHandler {
                 .addSubcommands(new SubcommandData("poll", "Configure poll role and channel")
                         .addOption(OptionType.ROLE, "role", "Role to ping when poles are made")
                         .addOption(OptionType.CHANNEL, "channel", "Channel to make new polls in"))
+                .addSubcommands(new SubcommandData("tcc", "Set channels for data embeds")
+                        .addOption(OptionType.CHANNEL, "players", "Channel for player data embed")
+                        .addOption(OptionType.CHANNEL, "drops", "Channel for drop data embed")
+                        .addOption(OptionType.CHANNEL, "approval", "Channel to send drop submissions to"))
                 .addSubcommands(new SubcommandData("debug", "Toggle debugging mode")));
 
         // Mod commands
@@ -77,8 +87,67 @@ public class CommandHandler {
                         .addChoice("d", "d")));
 
         // TANKERS CC
+        // OSRS APIs
+        commandData.add(Commands.slash("lookup", "Look up a player's stats")
+                .addOption(OptionType.STRING, "playername", "Player's name to search", true));
+
+        commandData.add(Commands.slash("price", "Look up an item's data")
+                .addOption(OptionType.STRING, "item", "Item's name to search", true));
+
+        // CC Handling
+        List<OptionData> submitOptionData = new ArrayList<>();
+        for (String boss : cSQL.GetBosses()) {
+            List<Command.Choice> itemChoices = new ArrayList<>();
+            for (String item : cSQL.GetItems()) {
+                if (item.split(";")[2].equalsIgnoreCase(boss.split(";")[0])) {
+                    String cleanItem = item.split(";")[0].toLowerCase().replace(" ", "-");
+                    itemChoices.add(new Command.Choice(cleanItem, cleanItem));
+                }
+            }
+            submitOptionData.add(new OptionData(OptionType.STRING, boss.split(";")[0].toLowerCase().replace(" ","-"), "Submit drops from " + boss.split(";")[0])
+                    .addChoices(itemChoices));
+        }
+        commandData.add(Commands.slash("submit", "Submit a drop for clan points")
+                .addOption(OptionType.ATTACHMENT, "screenshot", "Screenshot of the drop", true)
+                .addOptions(submitOptionData)
+                .addOption(OptionType.USER, "teammate-1", "1st party member")
+                .addOption(OptionType.USER, "teammate-2", "2nd party member")
+                .addOption(OptionType.USER, "teammate-3", "3rd party member")
+                .addOption(OptionType.USER, "teammate-4", "4th party member")
+                .addOption(OptionType.USER, "teammate-5", "5th party member")
+                .addOption(OptionType.USER, "teammate-6", "6th party member")
+                .addOption(OptionType.USER, "teammate-7", "7th party member")
+                .addOption(OptionType.USER, "teammate-8", "8th party member")
+                .addOption(OptionType.USER, "teammate-9", "9th party member"));
+
+        commandData.add(Commands.slash("points", "Manually manage member's clan points")
+                .addSubcommands(new SubcommandData("add", "Give points to a player")
+                        .addOption(OptionType.USER, "member", "Member to give points to", true)
+                        .addOption(OptionType.INTEGER, "points", "Number of points to give", true))
+                .addSubcommands(new SubcommandData("remove", "Remove points from a player")
+                        .addOption(OptionType.USER, "member", "Member to give points to", true)
+                        .addOption(OptionType.INTEGER, "points", "Number of points to give", true))
+                .addSubcommands(new SubcommandData("merge", "Merge data between two player entries (for name change correction)")
+                        .addOption(OptionType.STRING, "old-name", "Previous name", true)
+                        .addOption(OptionType.USER, "new-name", "Current name", true)));
 
 
+        List<Command.Choice> bossChoices = new ArrayList<>();
+        for (String boss : cSQL.GetBosses()) bossChoices.add(new Command.Choice(boss.split(";")[0], boss.split(";")[0]));
+
+        commandData.add(Commands.slash("drops", "Handle drops to be counted for points")
+                .addOption(OptionType.STRING, "add", "Item's name to add (requires boss)")
+                .addOptions(new OptionData(OptionType.STRING, "boss", "Boss that drops the item")
+                        .addChoices(bossChoices))
+                .addOption(OptionType.STRING, "remove", "Item's name to remove")
+                .addOption(OptionType.BOOLEAN, "list", "Show list of registered drops"));
+
+        commandData.add(Commands.slash("boss", "Handle boss data")
+                .addOption(OptionType.STRING, "add", "Boss's name to add")
+                .addOption(OptionType.STRING, "remove", "Boss's name to remove")
+                .addOption(OptionType.BOOLEAN, "list", "Show list of registered bosses"));
+
+        // Register commands
         jda.updateCommands().addCommands(commandData).queue();
         System.out.println("[Tankers] [+] Registered " + commandData.toArray().length + " commands to " + jda.getGuilds());
     }
@@ -93,6 +162,7 @@ public class CommandHandler {
                     case "mod-roles" -> HandleModRoles(event);
                     case "mod-log" -> HandleModLog(event);
                     case "poll" -> HandlePollConfig(event);
+                    case "tcc" -> HandleTCCCommand(event);
                     case "debug" -> HandleDebug(event);
                 }
             }
@@ -114,7 +184,23 @@ public class CommandHandler {
             // General
             case "remindme" -> RemindmeHandler.RemindMe(event);
 
-            // AVAS
+            // TANKERS CC
+            case "lookup" -> GameIntegrationHandler.PlayerLookup(event);
+            case "price" -> GameIntegrationHandler.ItemLookup(event);
+            case "submit" -> ClanIntegrationHandler.SubmitDrop(event);
+
+            case "points" -> {
+                if(!i.CheckPermission(event, 2)) return;
+                ClanIntegrationHandler.HandlePoints(event);
+            }
+            case "drops" -> {
+                if(!i.CheckPermission(event, 2)) return;
+                ClanIntegrationHandler.HandleItems(event);
+            }
+            case "boss" -> {
+                if(!i.CheckPermission(event, 2)) return;
+                ClanIntegrationHandler.HandleBosses(event);
+            }
         }
     }
 
@@ -231,6 +317,49 @@ public class CommandHandler {
                     .setDescription("Failed to update poll config!");
             new EmbedUtil().ReplyEmbed(event, eb, true, true);
         }
+    }
+
+    static void HandleTCCCommand (SlashCommandInteraction event) {
+        EmbedBuilder eb = new EmbedBuilder().setTitle("[Tankers] Admin");
+
+        TextChannel approvalChannel = null;
+        TextChannel playerDataChannel = null;
+        TextChannel dropDataChannel = null;
+
+        try { approvalChannel = event.getOption("approval").getAsTextChannel(); } catch (Exception ignored) {}
+        try { playerDataChannel = event.getOption("players").getAsTextChannel(); } catch (Exception ignored) {}
+        try { dropDataChannel = event.getOption("drops").getAsTextChannel(); } catch (Exception ignored) {}
+
+        String desc = "";
+        if (approvalChannel != null) {
+            Data.SetApprovalChannel(approvalChannel);
+            desc += "Set drop approval channel to **" + approvalChannel.getName() + "**\n";
+            Logger.log("[+] Channel [" + approvalChannel.getName() + "] set as drop approval channel.", 1);
+        }
+
+        if (playerDataChannel != null) {
+            Data.SetPlayerDataChannel(playerDataChannel);
+            desc += "Set player data channel to **" + playerDataChannel.getName() + "**\n";
+            Logger.log("[+] Channel [" + playerDataChannel.getName() + "] set as player data channel.", 1);
+
+            MessageAction embedAction = playerDataChannel.sendMessageEmbeds(new EmbedBuilder().setTitle("#PLAYERS#").build());
+            try { Data.SetPlayerDataEmbed(embedAction.submit().get().getId()); }
+            catch (Exception ignored) { eb.setDescription("[X] Failed to create base embed (player data)"); }
+        }
+
+        if (dropDataChannel != null) {
+            Data.SetDropDataChannel(dropDataChannel);
+            desc += "Set drop data channel to **" + dropDataChannel.getName() + "**";
+            Logger.log("[+] Channel [" + dropDataChannel.getName() + "] set as drop data channel.", 1);
+
+//            MessageAction embedAction = dropDataChannel.sendMessageEmbeds(new EmbedBuilder().setTitle("#DROPS#").build());
+//            try { Data.SetDropDataEmbed(embedAction.submit().get().getId()); }
+//            catch (Exception ignored) { eb.setDescription("[X] Failed to create base embed (drop data)"); }
+        }
+
+        if (playerDataChannel != null || dropDataChannel != null) ClanIntegrationHandler.UpdatePlayerDataEmbed(event.getJDA());
+
+        new EmbedUtil().ReplyEmbed(event, eb.setDescription(desc), true, false);
     }
 
     static void HandleDebug (SlashCommandInteraction event) {

@@ -55,6 +55,31 @@ public class SQL {
                     duration long NOT NULL
                 );""";
         stmt.execute(sql);
+
+        sql = """
+                CREATE TABLE IF NOT EXISTS members (
+                    id integer PRIMARY KEY,
+                    member text NOT NULL,
+                    points integer DEFAULT 0
+                );""";
+        stmt.execute(sql);
+
+        sql = """
+                CREATE TABLE IF NOT EXISTS bosses (
+                    id integer PRIMARY KEY,
+                    boss text NOT NULL,
+                    embed_id text DEFAULT none
+                );""";
+        stmt.execute(sql);
+
+        sql = """
+                CREATE TABLE IF NOT EXISTS items (
+                    id integer PRIMARY KEY,
+                    item text NOT NULL,
+                    count integer DEFAULT 0,
+                    boss text NOT NULL
+                );""";
+        stmt.execute(sql);
     }
 
     public static Connection getConnectionObj () {

@@ -9,6 +9,10 @@ public class Config {
     private String dataPrivateChannel = "";
     private String pollRole = "";
     private String pollChannel = "";
+    private String approvalChannel = "";
+    private String playerDataChannel = "";
+    private String dropDataChannel = "";
+    private String playerDataEmbed = "";
     private boolean debug = false;
 
     public String getGuildPublic() {
@@ -73,6 +77,37 @@ public class Config {
 
     public void setPollChannel(String pollChannel) {
         this.pollChannel = pollChannel;
+    }
+
+    public String getApprovalChannel() {
+        return approvalChannel;
+    }
+
+    public void setApprovalChannel(String approvalChannel) {
+        this.approvalChannel = approvalChannel;
+    }
+
+    public String getPlayerDataChannel() {
+        return playerDataChannel;
+    }
+
+    public void setPlayerDataChannel(String playerDataChannel) {
+        this.playerDataChannel = playerDataChannel;
+    }
+
+    public String getDropDataChannel() {
+        return dropDataChannel;
+    }
+
+    public void setDropDataChannel(String dropDataChannel) {
+        this.dropDataChannel = dropDataChannel;
+    }
+    public String getPlayerDataEmbed() {
+        return playerDataEmbed;
+    }
+
+    public void setPlayerDataEmbed(String playerDataEmbed) {
+        this.playerDataEmbed = playerDataEmbed;
     }
 
     public boolean isDebug() {

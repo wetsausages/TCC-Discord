@@ -23,10 +23,10 @@ public class BotEvent extends ListenerAdapter {
 
         MuteHandler.Load(event.getJDA());
         RemindmeHandler.Load(event.getJDA());
+        CommandHandler.RegisterCommands(event.getJDA());
     }
 
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event) {
-        CommandHandler.RegisterCommands(event.getJDA());
     }
 }

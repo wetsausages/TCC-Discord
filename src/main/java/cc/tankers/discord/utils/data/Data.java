@@ -130,6 +130,38 @@ public class Data {
         config.setPollChannel(channel.getId()); Save();
     }
 
+    public static TextChannel GetApprovalChannel (JDA jda) {
+        return jda.getTextChannelById(config.getApprovalChannel());
+    }
+
+    public static void SetApprovalChannel (TextChannel channel) {
+        config.setApprovalChannel(channel.getId()); Save();
+    }
+
+    public static TextChannel GetPlayerDataChannel (JDA jda) {
+        return jda.getTextChannelById(config.getPlayerDataChannel());
+    }
+
+    public static void SetPlayerDataChannel (TextChannel channel) {
+        config.setPlayerDataChannel(channel.getId()); Save();
+    }
+
+    public static TextChannel GetDropDataChannel (JDA jda) {
+        return jda.getTextChannelById(config.getDropDataChannel());
+    }
+
+    public static void SetDropDataChannel (TextChannel channel) {
+        config.setDropDataChannel(channel.getId()); Save();
+    }
+
+    public static String GetPlayerDataEmbed (JDA jda) {
+        return config.getPlayerDataEmbed();
+    }
+
+    public static void SetPlayerDataEmbed (String id) {
+        config.setPlayerDataEmbed(id); Save();
+    }
+
     // Debug
     public static boolean GetDebug () {
         return config.isDebug();
