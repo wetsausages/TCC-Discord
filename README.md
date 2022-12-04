@@ -23,9 +23,9 @@ The bot checks command permissions against a list of chosen roles as opposed to 
 # Modules
 ## Clan management
 Everything related to OSRS is handled in its own integration module. New members are added to the list of clan members when their name is associated with a submitted/approved drop. Adding drops is 2 steps:
-1. Add the boss with `/boss add`
-2. Once the commands update (up to an hour), add the drops with `/drop add`
-Wait for commands to update again, and submissions can be made for the new drops
+1. Add the boss with `/boss add`.
+2. Once the commands update (up to an hour), add the drops with `/drop add`.
+Wait for commands to update again, and submissions can be made for the new drops.
 
 ### Commands
 `/lookup [playername]`
