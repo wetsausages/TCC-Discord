@@ -13,6 +13,7 @@ public class Config {
     private String playerDataChannel = "";
     private String dropDataChannel = "";
     private String playerDataEmbed = "";
+    private String lootChannel = "";
     private boolean debug = false;
 
     public String getGuildPublic() {
@@ -108,6 +109,14 @@ public class Config {
 
     public void setPlayerDataEmbed(String playerDataEmbed) {
         this.playerDataEmbed = playerDataEmbed;
+    }
+
+    public String getLootChannel() {
+        return lootChannel;
+    }
+
+    public void setLootChannel(String lootChannel) {
+        this.lootChannel = lootChannel;
     }
 
     public boolean isDebug() {

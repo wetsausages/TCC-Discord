@@ -104,6 +104,7 @@ Provides the user with a deluge of useless information.
 Sets a reminder message and a duration to wait before the bot pings you with the input message.
 
 TODO:
+0. loots channel -> autodrop submitted screenshots and tag participants
 1. KOTS
 2. PvM Challenge
 3. !rules

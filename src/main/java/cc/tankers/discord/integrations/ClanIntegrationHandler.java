@@ -85,17 +85,21 @@ public class ClanIntegrationHandler {
         // Get points
         Pattern wikiExchangeValuePattern = Pattern.compile(".*id=\"GEPrice\">(.*?)<.*?");
         String requestURL = "https://oldschool.runescape.wiki/w/Exchange:" + item;
-        int value = 0;
+        String price = "";
+        int points = 0;
         try {
             String content = GameIntegrationHandler.request(requestURL);
             Matcher m = wikiExchangeValuePattern.matcher(content);
             if (m.find()) {
-                try { value = Integer.parseInt(m.group(1).replace(",", ""))/1000000; }
-                catch (Exception ignored) { value = 1; }
+                try {
+                    price = m.group(1).replace(",", "");
+                    points = Integer.parseInt(price)/1000000;
+                }
+                catch (Exception ignored) { points = 1; }
             }
         } catch (IOException e) { throw new RuntimeException(e); }
 
-        if (value < 1) {
+        if (points < 1) {
             EmbedBuilder eb = new EmbedBuilder()
                     .setTitle("[Tankers] Submit Drop")
                     .setDescription("Unable to reach Wiki Exchange - please try resubmitting later!")
@@ -116,7 +120,7 @@ public class ClanIntegrationHandler {
         EmbedBuilder eb = new EmbedBuilder()
                 .setTitle("[Tankers] Submit Drop")
                 .addField("Item:", item, true)
-                .addField("Points:", String.valueOf(value), true)
+                .addField("Points:", String.valueOf(points), true)
                 .addField("Players:", newPlayersList, false);
         new EmbedUtil().ReplyEmbed(event, eb, true, false);
 
@@ -126,7 +130,7 @@ public class ClanIntegrationHandler {
                 .setTitle("[Admin] Validate Submission")
                 .setImage(screenshot)
                 .addField("Item:", item, true)
-                .addField("Points:", String.valueOf(value), true)
+                .addField("Points:", String.valueOf(points), true)
                 .addField("Players:", newPlayersList, false);
 
         // Store embed ID to delete later
@@ -136,13 +140,22 @@ public class ClanIntegrationHandler {
         catch (InterruptedException | ExecutionException e) {  throw new RuntimeException(e); }
 
         // Send buttons
-        Button button0 = Button.primary("submit-approve-" + item + "-" + newPlayersList + "-" + value + "-" + embedID, "Approve");
+        Button button0 = Button.primary("submit-approve-" + item + "-" + newPlayersList + "-" + points + "-" + embedID, "Approve");
         Button button1 = Button.danger("submit-deny-" + embedID, "Deny");
         Message message = new MessageBuilder()
                 .setContent(" ")
                 .setActionRows(ActionRow.of(button0, button1))
                 .build();
         approvalChannel.sendMessage(message).queue();
+
+        // Send drop to loot channel
+        EmbedBuilder lootEB = new EmbedBuilder()
+                .setTitle("[Tankers] Loot")
+                .setImage(screenshot)
+                .addField("Item:", item, true)
+                .addField("Players:", newPlayersList, true)
+                .addField("Value:", String.format("%,d", Integer.parseInt(price)) + " gp", false);
+        Data.GetLootChannel(event.getJDA()).sendMessageEmbeds(lootEB.build()).queue();
     }
 
     public static void ApproveSubmission (ButtonInteractionEvent event) {
@@ -353,8 +366,8 @@ public class ClanIntegrationHandler {
         }
         EmbedBuilder playerEB = new EmbedBuilder()
                 .setTitle("Member List")
-                .setDescription("**How to submit:**\nIn any channel, use the `/submit` command. A screenshot and item name are required. Select the item name by using the boss options. You can also include teammates with the teammate options and tagging their discord.\n\n" +
-                        "Rank points are allocated based on current GE value of the drop at a rate of 1 point per 1 mil gp value. Points are given in full to all team members, and solo drops will not be considered. Drops are also only valid if ALL team members are part of the clan. \n" +
+                .setDescription("**How to submit:**\nIn any channel, use the `/submit` command. A screenshot and item name are required. Select the item name by using the boss options. See " + Data.GetDropDataChannel(jda).getAsMention() + " for category names. You can also include teammates with the teammate options and tagging their discord.\n\n" +
+                        "Rank points are allocated based on current GE value of the drop at a rate of 1 point per 1 mil gp value. Points are given in full to all team members. Drops are also only valid if ALL team members are part of the clan. \n" +
                         "**NOTE:** please contact an administrator if you change your name!\n\n" +
                         "**Rankings**\nDragon - 10000\nRunite - 5000\nAdamant - 3000\nMithril - 1500\nSteel - 400\nIron - 150\nBronze - 50")
                 .addField("Player", playerBlob[0], true)

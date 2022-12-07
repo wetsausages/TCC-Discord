@@ -162,6 +162,14 @@ public class Data {
         config.setPlayerDataEmbed(id); Save();
     }
 
+    public static TextChannel GetLootChannel (JDA jda) {
+        return jda.getTextChannelById(config.getLootChannel());
+    }
+
+    public static void SetLootChannel (TextChannel channel) {
+        config.setLootChannel(channel.getId()); Save();
+    }
+
     // Debug
     public static boolean GetDebug () {
         return config.isDebug();

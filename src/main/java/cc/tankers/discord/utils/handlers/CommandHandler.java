@@ -51,7 +51,8 @@ public class CommandHandler {
                 .addSubcommands(new SubcommandData("tcc", "Set channels for data embeds")
                         .addOption(OptionType.CHANNEL, "players", "Channel for player data embed")
                         .addOption(OptionType.CHANNEL, "drops", "Channel for drop data embed")
-                        .addOption(OptionType.CHANNEL, "approval", "Channel to send drop submissions to"))
+                        .addOption(OptionType.CHANNEL, "approval", "Channel to send drop submissions to")
+                        .addOption(OptionType.CHANNEL, "loot", "Channel to send loot embeds to (public)"))
                 .addSubcommands(new SubcommandData("debug", "Toggle debugging mode")));
 
         // Mod commands
@@ -325,10 +326,12 @@ public class CommandHandler {
         TextChannel approvalChannel = null;
         TextChannel playerDataChannel = null;
         TextChannel dropDataChannel = null;
+        TextChannel lootChannel = null;
 
         try { approvalChannel = event.getOption("approval").getAsTextChannel(); } catch (Exception ignored) {}
         try { playerDataChannel = event.getOption("players").getAsTextChannel(); } catch (Exception ignored) {}
         try { dropDataChannel = event.getOption("drops").getAsTextChannel(); } catch (Exception ignored) {}
+        try { lootChannel = event.getOption("loot").getAsTextChannel(); } catch (Exception ignored) {}
 
         String desc = "";
         if (approvalChannel != null) {
@@ -355,6 +358,12 @@ public class CommandHandler {
 //            MessageAction embedAction = dropDataChannel.sendMessageEmbeds(new EmbedBuilder().setTitle("#DROPS#").build());
 //            try { Data.SetDropDataEmbed(embedAction.submit().get().getId()); }
 //            catch (Exception ignored) { eb.setDescription("[X] Failed to create base embed (drop data)"); }
+        }
+
+        if (lootChannel != null) {
+            Data.SetLootChannel(lootChannel);
+            desc += "Set loot channel to **" + lootChannel.getName() + "**\n";
+            Logger.log("[+] Channel [" + lootChannel.getName() + "] set as loot channel.", 1);
         }
 
         if (playerDataChannel != null || dropDataChannel != null) ClanIntegrationHandler.UpdatePlayerDataEmbed(event.getJDA());
