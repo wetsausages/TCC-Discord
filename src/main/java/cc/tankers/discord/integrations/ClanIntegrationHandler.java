@@ -85,27 +85,27 @@ public class ClanIntegrationHandler {
         // Get points
         Pattern wikiExchangeValuePattern = Pattern.compile(".*id=\"GEPrice\">(.*?)<.*?");
         String requestURL = "https://oldschool.runescape.wiki/w/Exchange:" + item;
+        String content = "";
         String price = "";
         int points = 0;
-        try {
-            String content = GameIntegrationHandler.request(requestURL);
-            Matcher m = wikiExchangeValuePattern.matcher(content);
-            if (m.find()) {
-                try {
-                    price = m.group(1).replace(",", "");
-                    points = Integer.parseInt(price)/1000000;
-                }
-                catch (Exception ignored) { points = 1; }
-            }
-        } catch (IOException e) { throw new RuntimeException(e); }
-
-        if (points < 1) {
+        try { content = GameIntegrationHandler.request(requestURL); }
+        catch (IOException e) {
             EmbedBuilder eb = new EmbedBuilder()
                     .setTitle("[Tankers] Submit Drop")
                     .setDescription("Unable to reach Wiki Exchange - please try resubmitting later!")
                     .setFooter(requestURL);
             new EmbedUtil().ReplyEmbed(event, eb, true, true);
             return;
+        }
+
+        Matcher m = wikiExchangeValuePattern.matcher(content);
+        if (m.find()) {
+            try {
+                price = m.group(1).replace(",", "");
+                points = Integer.parseInt(price)/1000000;
+                if (points < 1) points = 1;
+            }
+            catch (Exception ignored) { points = 1; }
         }
 
         // Validate players (add if row not exists)
