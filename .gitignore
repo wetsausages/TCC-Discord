@@ -42,3 +42,4 @@ classpath/**
 out/.env
 out/data/**
 out/logs/**
+*.prod

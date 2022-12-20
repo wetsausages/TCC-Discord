@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -43,7 +44,6 @@ public class ClanIntegrationHandler {
         String item = "";
         for (Iterator<OptionMapping> it = optList.iterator(); it.hasNext(); ) {
             OptionMapping curOpt = it.next();
-            System.out.println(curOpt.getName() + ", " + curOpt.getAsString());
             if (!curOpt.getName().contains("teammate") && !curOpt.getName().contains("screenshot")) item = curOpt.getAsString().toLowerCase().replace("-", " ");
         }
 
@@ -173,12 +173,12 @@ public class ClanIntegrationHandler {
         UpdatePlayerDataEmbed(event.getJDA());
         UpdateDropDataEmbed(event.getJDA(), item.split(";")[2]);
 
-        Data.GetApprovalChannel(event.getJDA()).deleteMessageById(event.getButton().getId().split("-")[5]).queue();
+        Data.GetApprovalChannel(event.getJDA()).addReactionById(event.getButton().getId().split("-")[5], Emoji.fromUnicode("✅")).queue();
         event.getMessage().delete().queue();
     }
 
     public static void DenySubmission (ButtonInteractionEvent event) {
-        Data.GetApprovalChannel(event.getJDA()).deleteMessageById(event.getButton().getId().split("-")[2]).queue();
+        Data.GetApprovalChannel(event.getJDA()).addReactionById(event.getButton().getId().split("-")[2], Emoji.fromUnicode("❌")).queue();
         event.getMessage().delete().queue();
     }
 
