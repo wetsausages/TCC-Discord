@@ -32,14 +32,10 @@ public class ClanEventHandler {
     static File kotsFile = new File("./events/kots.json");
 
     public static void Initialize(JDA jda) {
-        if (!(new File("./events")).exists())
-            (new File("./events")).mkdir();
-        if (!(new File("./events/pvmchallenge")).exists())
-            (new File("./events/pvmchallenge")).mkdir();
-        if (!(new File("./events/kots")).exists())
-            (new File("./events/kots")).mkdir();
-        if (!Data.GetPCBoss().equalsIgnoreCase("none"))
-            LoadPC();
+        if (!(new File("./events")).exists()) new File("./events").mkdir();
+        if (!(new File("./events/pvmchallenge")).exists()) new File("./events/pvmchallenge").mkdir();
+        if (!(new File("./events/kots")).exists()) new File("./events/kots").mkdir();
+        if (!Data.GetPCBoss().equalsIgnoreCase("none")) LoadPC();
     }
 
     public static void HandleEvent(SlashCommandInteraction event) {
@@ -57,7 +53,7 @@ public class ClanEventHandler {
                         Data.SetPCBoss(boss);
                         EmbedBuilder dataEB = (new EmbedBuilder()).setTitle("[Tankers] PvM Challenge").setDescription("**Boss:** " + boss + "\n\n## rules ##");
                         String embedID = "";
-                        MessageAction embedAction = Data.GetEventDataChannel(event.getJDA()).sendMessageEmbeds(dataEB.build(), new MessageEmbed[0]);
+                        MessageAction embedAction = Data.GetEventDataChannel(event.getJDA()).sendMessageEmbeds(dataEB.build());
                         try {
                             embedID = ((Message)embedAction.submit().get()).getId();
                         } catch (InterruptedException|java.util.concurrent.ExecutionException e) {
@@ -90,9 +86,9 @@ public class ClanEventHandler {
     public static void SubmitDrop(JDA jda, String[] players, int points) {
         for (String player : players) {
             if (pcScoreboard.containsKey(player)) {
-                pcScoreboard.put(player, Integer.valueOf(((Integer)pcScoreboard.get(player)).intValue() + points));
+                pcScoreboard.put(player, pcScoreboard.get(player).intValue() + points);
             } else {
-                pcScoreboard.put(player, Integer.valueOf(points));
+                pcScoreboard.put(player, points);
             }
         }
         pcScoreboard = Sort(pcScoreboard);
@@ -143,7 +139,7 @@ public class ClanEventHandler {
     static void LoadPC() {
         MapType type = TypeFactory.defaultInstance().constructMapType(HashMap.class, String.class, Integer.class);
         try {
-            pcScoreboard = (Map<String, Integer>)(new ObjectMapper()).readValue(pcFile, (JavaType)type);
+            pcScoreboard = new ObjectMapper().readValue(pcFile, type);
             Logger.log("[+] PvM Challenge data loaded.", 1);
         } catch (IOException e) {
             Logger.log("[-] Failed to load PvM Challenge data!\n" + e, 1);
@@ -154,7 +150,7 @@ public class ClanEventHandler {
 
     public static <K, V extends Comparable<? super V>> Map<K, V> Sort(Map<K, V> map) {
         List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
-        list.sort(Collections.reverseOrder((Comparator)Map.Entry.comparingByValue()));
+        list.sort(Collections.reverseOrder(Map.Entry.comparingByValue()));
         Map<K, V> result = new LinkedHashMap<>();
         for (Map.Entry<K, V> entry : list)
             result.put(entry.getKey(), entry.getValue());
