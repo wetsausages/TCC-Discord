@@ -1,6 +1,7 @@
 package cc.tankers.discord.utils.listeners;
 
 import cc.tankers.discord.general.RemindmeHandler;
+import cc.tankers.discord.integrations.ClanEventHandler;
 import cc.tankers.discord.moderation.MuteHandler;
 import cc.tankers.discord.utils.Logger;
 import cc.tankers.discord.utils.data.Data;
@@ -23,6 +24,7 @@ public class BotEvent extends ListenerAdapter {
 
         MuteHandler.Load(event.getJDA());
         RemindmeHandler.Load(event.getJDA());
+        ClanEventHandler.Initialize(event.getJDA());
         CommandHandler.RegisterCommands(event.getJDA());
     }
 

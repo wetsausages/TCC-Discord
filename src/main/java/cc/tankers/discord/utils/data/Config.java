@@ -2,22 +2,45 @@ package cc.tankers.discord.utils.data;
 
 public class Config {
     private String guildPublic = "";
+
     private String guildPrivate = "";
+
     private String modRoles = "";
+
     private String modChannel = "";
+
     private String dataPublicChannel = "";
+
     private String dataPrivateChannel = "";
+
     private String pollRole = "";
+
     private String pollChannel = "";
+
     private String approvalChannel = "";
+
     private String playerDataChannel = "";
+
     private String dropDataChannel = "";
+
     private String playerDataEmbed = "";
+
     private String lootChannel = "";
+
+    private String eventDataChannel = "";
+
+    private String eventDataEmbed = "";
+
+    private String eventLBChannel = "";
+
+    private String pcBoss = "none";
+
+    private String kotsSkill = "none";
+
     private boolean debug = false;
 
     public String getGuildPublic() {
-        return guildPublic;
+        return this.guildPublic;
     }
 
     public void setGuildPublic(String guildPublic) {
@@ -25,7 +48,7 @@ public class Config {
     }
 
     public String getGuildPrivate() {
-        return guildPrivate;
+        return this.guildPrivate;
     }
 
     public void setGuildPrivate(String guildPrivate) {
@@ -33,7 +56,7 @@ public class Config {
     }
 
     public String getModRoles() {
-        return modRoles;
+        return this.modRoles;
     }
 
     public void setModRoles(String modRoles) {
@@ -41,7 +64,7 @@ public class Config {
     }
 
     public String getModChannel() {
-        return modChannel;
+        return this.modChannel;
     }
 
     public void setModChannel(String modChannel) {
@@ -49,7 +72,7 @@ public class Config {
     }
 
     public String getDataPublicChannel() {
-        return dataPublicChannel;
+        return this.dataPublicChannel;
     }
 
     public void setDataPublicChannel(String dataPublicChannel) {
@@ -57,7 +80,7 @@ public class Config {
     }
 
     public String getDataPrivateChannel() {
-        return dataPrivateChannel;
+        return this.dataPrivateChannel;
     }
 
     public void setDataPrivateChannel(String dataPrivateChannel) {
@@ -65,7 +88,7 @@ public class Config {
     }
 
     public String getPollRole() {
-        return pollRole;
+        return this.pollRole;
     }
 
     public void setPollRole(String pollRole) {
@@ -73,7 +96,7 @@ public class Config {
     }
 
     public String getPollChannel() {
-        return pollChannel;
+        return this.pollChannel;
     }
 
     public void setPollChannel(String pollChannel) {
@@ -81,7 +104,7 @@ public class Config {
     }
 
     public String getApprovalChannel() {
-        return approvalChannel;
+        return this.approvalChannel;
     }
 
     public void setApprovalChannel(String approvalChannel) {
@@ -89,7 +112,7 @@ public class Config {
     }
 
     public String getPlayerDataChannel() {
-        return playerDataChannel;
+        return this.playerDataChannel;
     }
 
     public void setPlayerDataChannel(String playerDataChannel) {
@@ -97,14 +120,15 @@ public class Config {
     }
 
     public String getDropDataChannel() {
-        return dropDataChannel;
+        return this.dropDataChannel;
     }
 
     public void setDropDataChannel(String dropDataChannel) {
         this.dropDataChannel = dropDataChannel;
     }
+
     public String getPlayerDataEmbed() {
-        return playerDataEmbed;
+        return this.playerDataEmbed;
     }
 
     public void setPlayerDataEmbed(String playerDataEmbed) {
@@ -112,19 +136,58 @@ public class Config {
     }
 
     public String getLootChannel() {
-        return lootChannel;
+        return this.lootChannel;
     }
 
     public void setLootChannel(String lootChannel) {
         this.lootChannel = lootChannel;
     }
 
+    public String getEventDataChannel() {
+        return this.eventDataChannel;
+    }
+
+    public void setEventDataChannel(String eventDataChannel) {
+        this.eventDataChannel = eventDataChannel;
+    }
+
+    public String getEventDataEmbed() {
+        return this.eventDataEmbed;
+    }
+
+    public void setEventDataEmbed(String eventDataEmbed) {
+        this.eventDataEmbed = eventDataEmbed;
+    }
+
+    public String getEventLBChannel() {
+        return this.eventLBChannel;
+    }
+
+    public void setEventLBChannel(String eventLBChannel) {
+        this.eventLBChannel = eventLBChannel;
+    }
+
+    public String getPCBoss() {
+        return this.pcBoss;
+    }
+
+    public void setPCBoss(String boss) {
+        this.pcBoss = boss;
+    }
+
+    public String getKOTSSkill() {
+        return this.kotsSkill;
+    }
+
+    public void setKOTSSkill(String skill) {
+        this.kotsSkill = skill;
+    }
+
     public boolean isDebug() {
-        return debug;
+        return this.debug;
     }
 
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
 }
-

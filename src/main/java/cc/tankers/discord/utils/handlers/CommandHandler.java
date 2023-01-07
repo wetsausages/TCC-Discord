@@ -1,6 +1,7 @@
 package cc.tankers.discord.utils.handlers;
 
 import cc.tankers.discord.general.RemindmeHandler;
+import cc.tankers.discord.integrations.ClanEventHandler;
 import cc.tankers.discord.integrations.ClanIntegrationHandler;
 import cc.tankers.discord.integrations.ClanSQL;
 import cc.tankers.discord.integrations.GameIntegrationHandler;
@@ -37,8 +38,8 @@ public class CommandHandler {
         commandData.add(Commands.slash("config", "Configure channels, roles and stuff for the bot")
                 .addSubcommands(new SubcommandData("guild", "Set public and private guilds")
                         .addOptions(new OptionData(OptionType.STRING, "set", "Set public/private guild", true)
-                            .addChoice("public", "public")
-                            .addChoice("private", "private")))
+                                .addChoice("public", "public")
+                                .addChoice("private", "private")))
                 .addSubcommands(new SubcommandData("mod-roles", "Configure mod stuff")
                         .addOption(OptionType.ROLE, "add", "Add role to the mod role list")
                         .addOption(OptionType.ROLE, "remove", "Remove role from the mod role list")
@@ -148,6 +149,15 @@ public class CommandHandler {
                 .addOption(OptionType.STRING, "remove", "Boss's name to remove")
                 .addOption(OptionType.BOOLEAN, "list", "Show list of registered bosses"));
 
+        commandData.add(Commands.slash("event", "Manage CC events")
+                .addSubcommands((new SubcommandData("pvm-challenge", "Manage PvM challenge event"))
+                        .addOptions((new OptionData(OptionType.STRING, "set", "Start/stop the event", true))
+                                .addChoice("start", "start")
+                                .addChoice("stop", "stop"))
+                        .addOptions((new OptionData(OptionType.STRING, "boss", "Set the boss for the event"))
+                                .addChoices(bossChoices)))
+                .addSubcommands(new SubcommandData("kots", "Manage King of the Skill event")));
+
         // Register commands
         jda.updateCommands().addCommands(commandData).queue();
         System.out.println("[Tankers] [+] Registered " + commandData.toArray().length + " commands to " + jda.getGuilds());
@@ -201,6 +211,10 @@ public class CommandHandler {
             case "boss" -> {
                 if(!i.CheckPermission(event, 2)) return;
                 ClanIntegrationHandler.HandleBosses(event);
+            }
+            case "event" -> {
+                if (!i.CheckPermission(event, 1)) return;
+                ClanEventHandler.HandleEvent(event);
             }
         }
     }

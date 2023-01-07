@@ -140,7 +140,12 @@ public class ClanIntegrationHandler {
         catch (InterruptedException | ExecutionException e) {  throw new RuntimeException(e); }
 
         // Send buttons
-        Button button0 = Button.primary("submit-approve-" + item + "-" + newPlayersList + "-" + points + "-" + embedID, "Approve");
+        String boss = "";
+        for (String _item : sql.GetItems()) {
+            if (_item.split(";")[0].equalsIgnoreCase(item))
+                boss = _item.split(";")[2];
+        }
+        Button button0 = Button.primary("submit-approve-" + item + "-" + newPlayersList + "-" + points + "-" + embedID + "-" + boss, "Approve");
         Button button1 = Button.danger("submit-deny-" + embedID, "Deny");
         Message message = new MessageBuilder()
                 .setContent(" ")
@@ -162,6 +167,7 @@ public class ClanIntegrationHandler {
         String item = event.getButton().getId().split("-")[2];
         String[] players = event.getButton().getId().split("-")[3].split(", ");
         int value = Integer.parseInt(event.getButton().getId().split("-")[4]);
+        String boss = event.getButton().getId().split("-")[6];
 
         for (String player : players) sql.AddPoints(player, value);
         sql.IncrementItemCount(item);
@@ -175,6 +181,9 @@ public class ClanIntegrationHandler {
 
         Data.GetApprovalChannel(event.getJDA()).addReactionById(event.getButton().getId().split("-")[5], Emoji.fromUnicode("✅")).queue();
         event.getMessage().delete().queue();
+
+        if (!Data.GetPCBoss().equalsIgnoreCase(boss.replace("-", " "))) return;
+        ClanEventHandler.SubmitDrop(event.getJDA(), players, value);
     }
 
     public static void DenySubmission (ButtonInteractionEvent event) {
