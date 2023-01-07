@@ -37,6 +37,8 @@ Returns the value of an item.
 `/submit [screenshot] [boss:item] [teammate-1] ... [teammate-9]`
 Submit a drop for later approval. Must include a screenshot of the drop as well as the name of the item. Optionally include up to 9 other party members involved.
 
+**NOTE:** Make sure `approval-channel` is set via `/config approval-channel`. See #Configure for more info.
+
 `/boss [add/remove/list]`
 Manage registered bosses. Boss registration is required before registering its drops. These names are only used internally for organization, so spelling does not matter.
 
@@ -51,7 +53,11 @@ https://oldschool.runescape.wiki/w/Exchange:logs
 `/points [add/remove] [member] [value]`
 Manually manage a player's points.
 
-NOTE: Make sure `approval-channel` is set via `/config approval-channel`. See #Configure for more info.
+#### Events
+`/events pvm-challenge [start/stop] [boss]`
+Manage PvM Challenge CC event.
+
+If the event is running and players submit a drop from the selected boss, it will also give them points in a separate collection for the event. Stopping the event archives the final scores locally and sends a top 3 winners embed to the leaderboards channel.
 
 ## Configure
 Administrator access only. Used to storing role and channel data for multiple functions, including moderation management and polling.

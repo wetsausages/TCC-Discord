@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
@@ -41,7 +42,7 @@ public class ClanEventHandler {
     public static void HandleEvent(SlashCommandInteraction event) {
         EmbedBuilder eb;
         switch (event.getSubcommandName()) {
-            case "pvm-challenge":
+            case "pvm-challenge" -> {
                 if (event.getOption("set").getAsString().equals("start")) {
                     if (!Data.GetPCBoss().equals("none")) {
                         EmbedBuilder embedBuilder = (new EmbedBuilder()).setTitle("[Tankers] PvM Challenge already running!").setFooter("Do `/events pvm-challenge stop` to stop it.");
@@ -55,31 +56,34 @@ public class ClanEventHandler {
                         String embedID = "";
                         MessageAction embedAction = Data.GetEventDataChannel(event.getJDA()).sendMessageEmbeds(dataEB.build());
                         try {
-                            embedID = ((Message)embedAction.submit().get()).getId();
-                        } catch (InterruptedException|java.util.concurrent.ExecutionException e) {
+                            embedID = ((Message) embedAction.submit().get()).getId();
+                        } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
                             throw new RuntimeException(e);
                         }
                         Data.SetEventDataEmbed(embedID);
                         pcFile.createNewFile();
+                        Data.GetEventDataChannel(event.getJDA()).upsertPermissionOverride(event.getGuild().getPublicRole()).setAllowed(Permission.VIEW_CHANNEL).queue();
                         EmbedBuilder embedBuilder1 = (new EmbedBuilder()).setTitle("[Tankers] PvM Challenge").setDescription("**Event started!**\nBoss: " + boss);
                         (new EmbedUtil()).ReplyEmbed(event, embedBuilder1, true, false);
                     } catch (Exception e) {
                         EmbedBuilder embedBuilder = (new EmbedBuilder()).setTitle("[Tankers] Failed to start PvM Challenge!").setFooter("Make sure you're setting the boss when starting.");
                         (new EmbedUtil()).ReplyEmbed(event, embedBuilder, true, true);
                     }
-                    break;
+                } else if (event.getOption("set").getAsString().equals("stop")) {
+                    if (Data.GetPCBoss().equals("none")) {
+                        EmbedBuilder embedBuilder = (new EmbedBuilder()).setTitle("[Tankers] PvM Challenge isn't running!").setFooter("Do `/events pvm-challenge set:start boss:[boss]` to start it.");
+                        (new EmbedUtil()).ReplyEmbed(event, embedBuilder, true, true);
+                        return;
+                    }
+                    ClosePC(event.getJDA());
+                    Data.GetEventDataChannel(event.getJDA()).deleteMessageById(Data.GetEventDataEmbed()).queue();
+                    Data.SetEventDataEmbed("");
+                    Data.GetEventDataChannel(event.getJDA()).upsertPermissionOverride(event.getGuild().getPublicRole()).setDenied(Permission.VIEW_CHANNEL).queue();
+
+                    eb = (new EmbedBuilder()).setTitle("[Tankers] PvM Challenge").setDescription("**Event ended!**");
+                    (new EmbedUtil()).ReplyEmbed(event, eb, true, false);
                 }
-                if (Data.GetPCBoss().equalsIgnoreCase("none")) {
-                    EmbedBuilder embedBuilder = (new EmbedBuilder()).setTitle("[Tankers] PvM Challenge isn't running!").setFooter("Do `/events pvm-challenge set:start boss:[boss]` to start it.");
-                    (new EmbedUtil()).ReplyEmbed(event, embedBuilder, true, true);
-                    return;
-                }
-                ClosePC(event.getJDA());
-                Data.GetEventDataChannel(event.getJDA()).deleteMessageById(Data.GetEventDataEmbed()).queue();
-                Data.SetEventDataEmbed("");
-                eb = (new EmbedBuilder()).setTitle("[Tankers] PvM Challenge").setDescription("**Event ended!**");
-                (new EmbedUtil()).ReplyEmbed(event, eb, true, false);
-                break;
+            }
         }
     }
 
