@@ -23,9 +23,9 @@ public class GameIntegrationHandler {
         String requestURL = "https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=" + name;
         try {
             String[] data = request(requestURL).split("\n");
-            String[] dataMap = {"Overall", "Attack", "Hitpoints", "Mining", "Strength", "Agility", "Smithing",
-            "Defence", "Herblore", "Fishing", "Ranged", "Thieving", "Cooking", "Prayer", "Crafting", "Firemaking",
-            "Magic", "Fletching", "Woodcutting", "Runecrafting", "Slayer", "Farming", "Construction", "Hunter"};
+            String[] dataMap = { "Overall", "Attack", "Defence", "Strength", "Hitpoints", "Ranged", "Prayer", "Magic", "Cooking",
+                    "Woodcutting", "Fletching", "Fishing", "Firemaking", "Crafting", "Smithing", "Mining", "Herblore",
+                    "Agility", "Thieving", "Slayer", "Farming", "Runecrafting", "Hunter", "Construction" };
             EmbedBuilder eb = new EmbedBuilder().setTitle(name + " - " + points + " points");
             for (int i = 1; i < 24; i++) eb.addField(dataMap[i], data[i].split(",")[1], true);
             eb.addField(dataMap[0], data[0].split(",")[1], true);
