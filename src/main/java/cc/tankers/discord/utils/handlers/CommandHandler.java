@@ -137,6 +137,12 @@ public class CommandHandler {
         List<Command.Choice> bossChoices = new ArrayList<>();
         for (String boss : cSQL.GetBosses()) bossChoices.add(new Command.Choice(boss.split(";")[0], boss.split(";")[0]));
 
+        List<Command.Choice> skillChoices = new ArrayList<>();
+        String[] skills = {"Attack", "Strength", "Defence", "Ranged", "Prayer", "Magic", "Runecrafting", "Construction",
+        "Hitpoints", "Agility", "Herblore", "Thieving", "Crafting", "Fletching", "Slayer", "Hunter",
+        "Mining", "Smithing", "Fishing", "Cooking", "Firemaking", "Woodcutting", "Farming"};
+        for (String skill : skills) skillChoices.add(new Command.Choice(skill, skill));
+
         commandData.add(Commands.slash("drops", "Handle drops to be counted for points")
                 .addOption(OptionType.STRING, "add", "Item's name to add (requires boss)")
                 .addOptions(new OptionData(OptionType.STRING, "boss", "Boss that drops the item")
@@ -150,13 +156,16 @@ public class CommandHandler {
                 .addOption(OptionType.BOOLEAN, "list", "Show list of registered bosses"));
 
         commandData.add(Commands.slash("event", "Manage CC events")
-                .addSubcommands((new SubcommandData("pvm-challenge", "Manage PvM challenge event"))
-                        .addOptions((new OptionData(OptionType.STRING, "set", "Start/stop the event", true))
-                                .addChoice("start", "start")
-                                .addChoice("stop", "stop"))
-                        .addOptions((new OptionData(OptionType.STRING, "boss", "Set the boss for the event"))
-                                .addChoices(bossChoices)))
-                .addSubcommands(new SubcommandData("kots", "Manage King of the Skill event")));
+                    .addOptions(new OptionData(OptionType.STRING, "set", "Start/stop the event", true)
+                            .addChoice("start", "start")
+                            .addChoice("stop", "stop"))
+                    .addOptions(new OptionData(OptionType.STRING, "event", "Select which event to stop/start", true)
+                            .addChoice("pvm-challenge", "pvm-challenge")
+                            .addChoice("kots", "kots"))
+                    .addOptions(new OptionData(OptionType.STRING, "boss", "Set the boss for the event")
+                            .addChoices(bossChoices))
+                    .addOptions(new OptionData(OptionType.STRING, "skill", "Set the skill for the event")
+                            .addChoices(skillChoices)));
 
         // Register commands
         jda.updateCommands().addCommands(commandData).queue();

@@ -54,11 +54,17 @@ https://oldschool.runescape.wiki/w/Exchange:logs
 Manually manage a player's points.
 
 #### Events
-`/events pvm-challenge [start/stop] [boss]`
+`/events [start/stop] [pvm-challenge] [boss]`
 Manage PvM Challenge CC event.
 
-If the event is running and players submit a drop from the selected boss, it will also give them points in a separate collection for the event. Stopping the event archives the final scores locally and sends a top 3 winners embed to the leaderboards channel.
+If the event is running and players submit a drop from the selected boss, it will also give them points in a separate collection for the event.
 
+`/events [start/stop] [kots] [skill]`
+Manage King of the Skill CC event.
+
+When the event starts, the bot pulls all current members (from main members list) and stores their current XP in the selected skill. Every 5 minutes, the current XP is fetched and subtracted from the starting XP. The difference is listed in the data embed. Starting and stopping this event takes a few minutes, as it fetches all member's high score data for both operations. OSRS high scores are trash.
+
+Stopping either event archives the final scores locally and sends a top 3 winners embed to the leaderboards channel. The bot does NOT account for ties, so maybe check the live scores before stopping the event.
 ## Configure
 Administrator access only. Used to storing role and channel data for multiple functions, including moderation management and polling.
 
