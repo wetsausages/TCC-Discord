@@ -115,7 +115,3 @@ Provides the user with a deluge of useless information.
 `/remindme [duration] [unit] [text]`
 Sets a reminder message and a duration to wait before the bot pings you with the input message.
 
-TODO:
-1. Rework submission approval button ID
-   1. Player names -> SQL member IDs
-      1. for player : players -> ids.add(sql.getMember(player).split(";")[0])
