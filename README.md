@@ -64,7 +64,7 @@ Manage King of the Skill CC event.
 
 When the event starts, the bot pulls all current members (from main members list) and stores their current XP in the selected skill. Every 5 minutes, the current XP is fetched and subtracted from the starting XP. The difference is listed in the data embed. Starting and stopping this event takes a few minutes, as it fetches all member's high score data for both operations. OSRS high scores are trash.
 
-Stopping either event archives the final scores locally and sends a top 3 winners embed to the leaderboards channel. The bot does NOT account for ties, so maybe check the live scores before stopping the event.
+Stopping either event archives the final scores locally and sends a top 3 winners embed to the leaderboards channel. The bot does NOT account for ties, so maybe check the live scores before stopping the event. The leaderboard channel is always visible, while the scores channel is only publicly visible when an event is running. When no event is running, it becomes hidden.
 ## Configure
 Administrator access only. Used to storing role and channel data for multiple functions, including moderation management and polling.
 
@@ -105,7 +105,7 @@ Quickly create dynamical polls. Automatically send them to a corresponding chann
 
 ### Command
 `/poll [question] [responses]*`
-Creates a poll. Seperate responses with a '**;**' (up to 10). Omit to default to 'yes' and 'no' responses.
+Creates a poll. Separate responses with a '**;**' (up to 10). Omit to default to 'yes' and 'no' responses.
 
 
 ## Other stuff
@@ -116,8 +116,5 @@ Provides the user with a deluge of useless information.
 Sets a reminder message and a duration to wait before the bot pings you with the input message.
 
 TODO:
-0. loots channel -> autodrop submitted screenshots and tag participants
-1. KOTS
-2. PvM Challenge
-3. !rules
-4. modifiers
+1. Rework submit -> `/submit [proof] [boss]` -> modal(teammate-1 ... teammate-10)
+Gives 25 slots for bosses, simplifies submission flow
