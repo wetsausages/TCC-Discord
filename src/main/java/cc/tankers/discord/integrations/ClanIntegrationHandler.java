@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,7 +55,7 @@ public class ClanIntegrationHandler {
             new EmbedUtil().ReplyEmbed(event, eb, true, true);
         }
 
-        List<String> players = new ArrayList<String>();
+        List<String> players = new ArrayList<>();
 
         try {
             String s = event.getMember().getNickname();
@@ -62,13 +63,28 @@ public class ClanIntegrationHandler {
             if (s != null) players.add(s);
         } catch (Exception ignored) { }
 
-        for (int i = 1; i < 10; i++) {
-            try {
-                String p = event.getOption("teammate-" + i).getAsMember().getNickname();
-                if (p == null) p = event.getOption("teammate-" + i).getAsUser().getName();
-                if (p != null) players.add(p);
-            } catch (Exception ignored) { }
+        Pattern teammatesPattern = Pattern.compile("<@(\\d+?)>");
+        Matcher teammatesMatches = teammatesPattern.matcher(event.getOption("teammates").getAsString());
+        for (MatchResult teammate: teammatesMatches.results().toList()) {
+            String teammateID = teammate.group(0).replace("<", "").replace(">", "").replace("@", "");
+            String playerName = event.getGuild().getMemberById(teammateID).getNickname();
+            if (playerName == null) playerName = event.getGuild().getMemberById(teammateID).getUser().getName();
+            if (playerName != null) players.add(playerName);
         }
+
+//        for (String player : event.getOption("teammates").getAsString().replace("<", "").replace(">", "").split("@")) {
+//            players.add(player.replace(" ",""));
+//            String playerName = event.getGuild().getMemberById(player.replace("<","").replace(">","")).getNickname();
+//            if (playerName == null) playerName = event.getGuild().getMemberById(player.replace("<","").replace(">","")).getUser().getName();
+//        }
+
+//        for (int i = 1; i < 10; i++) {
+//            try {
+//                String p = event.getOption("teammate-" + i).getAsMember().getNickname();
+//                if (p == null) p = event.getOption("teammate-" + i).getAsUser().getName();
+//                if (p != null) players.add(p);
+//            } catch (Exception ignored) { }
+//        }
 
         // Validate item
         List<String> itemsList = new ArrayList<>();
@@ -124,6 +140,15 @@ public class ClanIntegrationHandler {
                 .addField("Players:", newPlayersList, false);
         new EmbedUtil().ReplyEmbed(event, eb, true, false);
 
+        // Send drop to loot channel
+        EmbedBuilder lootEB = new EmbedBuilder()
+                .setTitle("[Tankers] Loot")
+                .setImage(screenshot)
+                .addField("Item:", item, true)
+                .addField("Players:", newPlayersList, true)
+                .addField("Value:", String.format("%,d", Integer.parseInt(price)) + " gp", false);
+        Data.GetLootChannel(event.getJDA()).sendMessageEmbeds(lootEB.build()).queue();
+
         // Send for approval
         TextChannel approvalChannel = Data.GetApprovalChannel(event.getJDA());
         EmbedBuilder approvalEB = new EmbedBuilder()
@@ -140,36 +165,43 @@ public class ClanIntegrationHandler {
         catch (InterruptedException | ExecutionException e) {  throw new RuntimeException(e); }
 
         // Send buttons
+        String ids = "";
+        for (String player : players) {
+            ids += sql.GetMember(player).split(";")[2] + ",";
+        }
+        ids = ids.substring(0,(ids.length()-2));
+
         String boss = "";
         for (String _item : sql.GetItems()) {
             if (_item.split(";")[0].equalsIgnoreCase(item))
                 boss = _item.split(";")[2];
         }
-        Button button0 = Button.primary("submit-approve-" + item + "-" + newPlayersList + "-" + points + "-" + embedID + "-" + boss, "Approve");
-        Button button1 = Button.danger("submit-deny-" + embedID, "Deny");
+        Button button0 = Button.primary("s-a-" + item + "-" + ids + "-" + points + "-" + embedID + "-" + boss, "Approve");
+        Button button1 = Button.danger("s-d-" + embedID, "Deny");
         Message message = new MessageBuilder()
                 .setContent(" ")
                 .setActionRows(ActionRow.of(button0, button1))
                 .build();
         approvalChannel.sendMessage(message).queue();
-
-        // Send drop to loot channel
-        EmbedBuilder lootEB = new EmbedBuilder()
-                .setTitle("[Tankers] Loot")
-                .setImage(screenshot)
-                .addField("Item:", item, true)
-                .addField("Players:", newPlayersList, true)
-                .addField("Value:", String.format("%,d", Integer.parseInt(price)) + " gp", false);
-        Data.GetLootChannel(event.getJDA()).sendMessageEmbeds(lootEB.build()).queue();
     }
 
     public static void ApproveSubmission (ButtonInteractionEvent event) {
         String item = event.getButton().getId().split("-")[2];
-        String[] players = event.getButton().getId().split("-")[3].split(", ");
+        String[] playerIds = event.getButton().getId().split("-")[3].split(",");
         int value = Integer.parseInt(event.getButton().getId().split("-")[4]);
         String boss = event.getButton().getId().split("-")[6];
 
-        for (String player : players) sql.AddPoints(player, value);
+        List<String> members = sql.GetMembers();
+        List<String> playerNames = new ArrayList<>();
+        for (String id : playerIds) {
+            for (String member : members) {
+                if (member.split(";")[2].equals(id)) {
+                    String playerName = member.split(";")[0];
+                    sql.AddPoints(playerName, value);
+                    playerNames.add(playerName);
+                }
+            }
+        }
         sql.IncrementItemCount(item);
 
         for (String i : sql.GetItems()) {
@@ -183,7 +215,7 @@ public class ClanIntegrationHandler {
         event.getMessage().delete().queue();
 
         if (!Data.GetPCBoss().equalsIgnoreCase(boss.replace("-", " "))) return;
-        ClanEventHandler.SubmitDrop(event.getJDA(), players, value);
+        ClanEventHandler.SubmitDrop(event.getJDA(), playerNames, value);
     }
 
     public static void DenySubmission (ButtonInteractionEvent event) {

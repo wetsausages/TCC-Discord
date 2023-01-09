@@ -155,7 +155,7 @@ public class ClanEventHandler {
         }
     }
 
-    public static void SubmitDrop(JDA jda, String[] players, int points) {
+    public static void SubmitDrop(JDA jda, List<String> players, int points) {
         for (String player : players) {
             if (pcScoreboard.containsKey(player)) {
                 pcScoreboard.put(player, pcScoreboard.get(player).intValue() + points);

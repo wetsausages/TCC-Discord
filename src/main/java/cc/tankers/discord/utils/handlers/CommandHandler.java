@@ -112,15 +112,7 @@ public class CommandHandler {
         commandData.add(Commands.slash("submit", "Submit a drop for clan points")
                 .addOption(OptionType.ATTACHMENT, "screenshot", "Screenshot of the drop", true)
                 .addOptions(submitOptionData)
-                .addOption(OptionType.USER, "teammate-1", "1st party member")
-                .addOption(OptionType.USER, "teammate-2", "2nd party member")
-                .addOption(OptionType.USER, "teammate-3", "3rd party member")
-                .addOption(OptionType.USER, "teammate-4", "4th party member")
-                .addOption(OptionType.USER, "teammate-5", "5th party member")
-                .addOption(OptionType.USER, "teammate-6", "6th party member")
-                .addOption(OptionType.USER, "teammate-7", "7th party member")
-                .addOption(OptionType.USER, "teammate-8", "8th party member")
-                .addOption(OptionType.USER, "teammate-9", "9th party member"));
+                .addOption(OptionType.STRING, "teammates", "Party members"));
 
         commandData.add(Commands.slash("points", "Manually manage member's clan points")
                 .addSubcommands(new SubcommandData("add", "Give points to a player")

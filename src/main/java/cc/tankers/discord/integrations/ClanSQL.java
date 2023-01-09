@@ -27,7 +27,7 @@ public class ClanSQL {
         try {
             ResultSet rs = SQL.getConnectionObj().prepareStatement(sql).executeQuery();
             while (rs.next()) {
-                member = rs.getString("member") + ";" + rs.getInt("points");
+                member = rs.getString("member") + ";" + rs.getInt("points") + ";" + rs.getInt("id");
             }
         } catch (SQLException e) { throw new RuntimeException(e); }
 
