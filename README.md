@@ -6,6 +6,7 @@
 - Manage members and their clan points
 - Streamline submission and approval processes
 - Track total clan drops
+- Handle clan events, like PvM Challenge and King of the Skill
 - Lookup player stats/clan points
 - Lookup item data/point value
 
