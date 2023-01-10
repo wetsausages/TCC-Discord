@@ -57,7 +57,7 @@ public class ClanEventHandler {
                         Data.SetPCBoss(boss);
                         EmbedBuilder dataEB = new EmbedBuilder()
                                 .setTitle("[Tankers] PvM Challenge")
-                                .setDescription("**Boss:** " + boss + "\n\n## rules ##");
+                                .setDescription("**Boss:** " + boss + "\n**Rewards:**\n1st - 5.5m\n2nd - 3m\n3rd - 1.5m\n\nAny pet earned during that week gets an extra 10m!");
                         String embedID = "";
                         MessageAction embedAction = Data.GetEventDataChannel(event.getJDA()).sendMessageEmbeds(dataEB.build());
                         try {
@@ -110,7 +110,7 @@ public class ClanEventHandler {
                         Data.SetKOTSSkill(skill);
                         EmbedBuilder dataEB = new EmbedBuilder()
                                 .setTitle("[Tankers] King of the Skill")
-                                .setDescription("**Skill:** " + skill + "\n\n## rules ##");
+                                .setDescription("**Skill:** " + skill + "\n**Rewards:**\n1st - 5.5m\n2nd - 3m\n3rd - 1.5m\n\n WE USE JAGEX HIGHSCORES! Your name has to be correct in `#" + Data.GetPlayerDataChannel(event.getJDA()).getName() + "` to participate! If you have points in the cc you're good. If you are new, just ask an admin!");
                         String embedID = "";
                         MessageAction embedAction = Data.GetEventDataChannel(event.getJDA()).sendMessageEmbeds(dataEB.build());
                         try {
@@ -155,7 +155,7 @@ public class ClanEventHandler {
         }
     }
 
-    public static void SubmitDrop(JDA jda, String[] players, int points) {
+    public static void SubmitDrop(JDA jda, List<String> players, int points) {
         for (String player : players) {
             if (pcScoreboard.containsKey(player)) {
                 pcScoreboard.put(player, pcScoreboard.get(player).intValue() + points);
@@ -172,10 +172,10 @@ public class ClanEventHandler {
         }
         EmbedBuilder dataEB = new EmbedBuilder()
                 .setTitle("[Tankers] PvM Challenge")
-                .setDescription("**Boss:** " + Data.GetPCBoss() + "\n## rules ##\n")
+                .setDescription("**Boss:** " + Data.GetPCBoss() + "\n**Rewards:**\n1st - 5.5m\n2nd - 3m\n3rd - 1.5m\n\nAny pet earned during that week gets an extra 10m!")
                 .addField("Player:", playerBlob, true)
                 .addField("Points:", pointsBlob, true);
-        Data.GetEventDataChannel(jda).editMessageEmbedsById(Data.GetEventDataEmbed(), new MessageEmbed[] { dataEB.build() }).queue();
+        Data.GetEventDataChannel(jda).editMessageEmbedsById(Data.GetEventDataEmbed(), dataEB.build()).queue();
         SavePC();
     }
 
@@ -280,7 +280,7 @@ public class ClanEventHandler {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
         EmbedBuilder dataEB = new EmbedBuilder()
                 .setTitle("[Tankers] King of the Skill")
-                .setDescription("**Skill:** " + Data.GetKOTSSkill() + "\n## rules ##\n")
+                .setDescription("**Skill:** " + skill + "\n**Rewards:**\n1st - 5.5m\n2nd - 3m\n3rd - 1.5m\n\n WE USE JAGEX HIGHSCORES! Your name has to be correct in `#" + Data.GetPlayerDataChannel(jda).getName() + "` to participate! If you have points in the cc you're good. If you are new, just ask an admin!")
                 .addField("Player:", playerBlob, true)
                 .addField("Starting XP:", startingXPBlob, true)
                 .addField("Gained XP:", gainedXPBlob, true)

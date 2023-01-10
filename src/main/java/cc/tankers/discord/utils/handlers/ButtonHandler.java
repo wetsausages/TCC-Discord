@@ -7,10 +7,10 @@ public class ButtonHandler {
     public static void Handle (ButtonInteractionEvent event) {
         String[] id = event.getButton().getId().split("-");
         switch (id[0]) {
-            case "submit" -> {
+            case "s" -> {
                 switch (id[1]) {
-                    case "approve" -> ClanIntegrationHandler.ApproveSubmission(event);
-                    case "deny" -> ClanIntegrationHandler.DenySubmission(event);
+                    case "a" -> ClanIntegrationHandler.ApproveSubmission(event);
+                    case "d" -> ClanIntegrationHandler.DenySubmission(event);
                 }
             }
         }
