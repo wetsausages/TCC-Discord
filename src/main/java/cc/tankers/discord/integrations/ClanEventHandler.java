@@ -252,9 +252,8 @@ public class ClanEventHandler {
     public static void UpdateKOTSData (JDA jda) {
         String skill = Data.GetKOTSSkill();
 
-        for (String member : new ClanSQL().GetMembers()) {
-            member = member.split(";")[0];
-            String requestURL = "https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=" + member;
+        for (String key : kotsStarting.keySet()) {
+            String requestURL = "https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=" + key;
             try {
                 String[] data = GameIntegrationHandler.request(requestURL).split("\n");
                 String[] dataMap = { "Overall", "Attack", "Defence", "Strength", "Hitpoints", "Ranged", "Prayer", "Magic", "Cooking",
@@ -262,7 +261,7 @@ public class ClanEventHandler {
                         "Agility", "Thieving", "Slayer", "Farming", "Runecrafting", "Hunter", "Construction" };
                 for (int i = 1; i < 24; i++) {
                     if (dataMap[i].equals(skill)) {
-                        kotsGains.put(member, Integer.parseInt(data[i].split(",")[2]) - kotsStarting.get(member));
+                        kotsGains.put(key, Integer.parseInt(data[i].split(",")[2]) - kotsStarting.get(key));
                         break;
                     }
                 }

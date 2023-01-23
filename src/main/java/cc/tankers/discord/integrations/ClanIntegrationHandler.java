@@ -158,7 +158,6 @@ public class ClanIntegrationHandler {
         // Send buttons
         String ids = "";
         for (String player : players) {
-            System.out.println(player);
             ids += sql.GetMember(player).split(";")[2] + ",";
         }
         ids = ids.substring(0,(ids.length()-1));
@@ -169,7 +168,6 @@ public class ClanIntegrationHandler {
                 boss = _item.split(";")[2];
         }
         Button button0 = Button.primary("s-a-" + item + "-" + ids + "-" + points + "-" + embedID + "-" + boss, "Approve");
-        System.out.println("BUTTONID: " + button0.getId());
         Button button1 = Button.danger("s-d-" + embedID, "Deny");
         Message message = new MessageBuilder()
                 .setContent(" ")
