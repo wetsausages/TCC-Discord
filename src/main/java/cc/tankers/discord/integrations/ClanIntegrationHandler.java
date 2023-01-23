@@ -42,6 +42,7 @@ public class ClanIntegrationHandler {
             return;
         }
 
+        // Can't remember but looks important
         String item = "";
         for (Iterator<OptionMapping> it = optList.iterator(); it.hasNext(); ) {
             OptionMapping curOpt = it.next();
@@ -55,6 +56,7 @@ public class ClanIntegrationHandler {
             new EmbedUtil().ReplyEmbed(event, eb, true, true);
         }
 
+        // Build list of involved players
         List<String> players = new ArrayList<>();
 
         try {
@@ -63,28 +65,17 @@ public class ClanIntegrationHandler {
             if (s != null) players.add(s);
         } catch (Exception ignored) { }
 
-        Pattern teammatesPattern = Pattern.compile("<@(\\d+?)>");
-        Matcher teammatesMatches = teammatesPattern.matcher(event.getOption("teammates").getAsString());
-        for (MatchResult teammate: teammatesMatches.results().toList()) {
-            String teammateID = teammate.group(0).replace("<", "").replace(">", "").replace("@", "");
-            String playerName = event.getGuild().getMemberById(teammateID).getNickname();
-            if (playerName == null) playerName = event.getGuild().getMemberById(teammateID).getUser().getName();
-            if (playerName != null) players.add(playerName);
-        }
-
-//        for (String player : event.getOption("teammates").getAsString().replace("<", "").replace(">", "").split("@")) {
-//            players.add(player.replace(" ",""));
-//            String playerName = event.getGuild().getMemberById(player.replace("<","").replace(">","")).getNickname();
-//            if (playerName == null) playerName = event.getGuild().getMemberById(player.replace("<","").replace(">","")).getUser().getName();
-//        }
-
-//        for (int i = 1; i < 10; i++) {
-//            try {
-//                String p = event.getOption("teammate-" + i).getAsMember().getNickname();
-//                if (p == null) p = event.getOption("teammate-" + i).getAsUser().getName();
-//                if (p != null) players.add(p);
-//            } catch (Exception ignored) { }
-//        }
+        try {
+            String teammatesString = event.getOption("teammates").getAsString();
+            Pattern teammatesPattern = Pattern.compile("<@(\\d+?)>");
+            Matcher teammatesMatches = teammatesPattern.matcher(teammatesString);
+            for (MatchResult teammate : teammatesMatches.results().toList()) {
+                String teammateID = teammate.group(0).replace("<", "").replace(">", "").replace("@", "");
+                String playerName = event.getGuild().getMemberById(teammateID).getNickname();
+                if (playerName == null) playerName = event.getGuild().getMemberById(teammateID).getUser().getName();
+                if (playerName != null) players.add(playerName);
+            }
+        } catch (Exception ignored) {}
 
         // Validate item
         List<String> itemsList = new ArrayList<>();
@@ -167,9 +158,10 @@ public class ClanIntegrationHandler {
         // Send buttons
         String ids = "";
         for (String player : players) {
+            System.out.println(player);
             ids += sql.GetMember(player).split(";")[2] + ",";
         }
-        ids = ids.substring(0,(ids.length()-2));
+        ids = ids.substring(0,(ids.length()-1));
 
         String boss = "";
         for (String _item : sql.GetItems()) {
@@ -177,6 +169,7 @@ public class ClanIntegrationHandler {
                 boss = _item.split(";")[2];
         }
         Button button0 = Button.primary("s-a-" + item + "-" + ids + "-" + points + "-" + embedID + "-" + boss, "Approve");
+        System.out.println("BUTTONID: " + button0.getId());
         Button button1 = Button.danger("s-d-" + embedID, "Deny");
         Message message = new MessageBuilder()
                 .setContent(" ")

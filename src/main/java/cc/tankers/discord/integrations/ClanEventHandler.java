@@ -53,6 +53,7 @@ public class ClanEventHandler {
                     }
                     try {
                         // Set boss (start event)
+                        pcScoreboard = new HashMap<>();
                         String boss = event.getOption("boss").getAsString();
                         Data.SetPCBoss(boss);
                         EmbedBuilder dataEB = new EmbedBuilder()
@@ -106,6 +107,8 @@ public class ClanEventHandler {
                     }
                     try {
                         // Set skill (start event)
+                        kotsStarting = new HashMap<>();
+                        kotsGains = new HashMap<>();
                         String skill = event.getOption("skill").getAsString();
                         Data.SetKOTSSkill(skill);
                         EmbedBuilder dataEB = new EmbedBuilder()
@@ -180,6 +183,7 @@ public class ClanEventHandler {
     }
 
     public static void ClosePC(JDA jda) {
+        pcScoreboard = Sort(pcScoreboard);
         File newPCFile = new File("./events/pvmchallenge/" + Data.GetPCBoss() + "-" + LocalDate.now() + ".json");
         try {
             (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValue(newPCFile, pcScoreboard);
@@ -191,7 +195,7 @@ public class ClanEventHandler {
         String pointsBlob = "";
         int count = 0;
         for (String key : pcScoreboard.keySet()) {
-            if (count == 3)
+            if (count == 5)
                 break;
             playerBlob = playerBlob.concat(key + "\n");
             pointsBlob = pointsBlob.concat("" + pcScoreboard.get(key) + "\n");
@@ -299,6 +303,7 @@ public class ClanEventHandler {
     public static void CloseKOTS(JDA jda) {
         UpdateKOTSData(jda);
         timer.cancel();
+        kotsGains = Sort(kotsGains);
 
         Data.GetEventDataChannel(jda).deleteMessageById(Data.GetEventDataEmbed()).queue();
         Data.SetEventDataEmbed("");

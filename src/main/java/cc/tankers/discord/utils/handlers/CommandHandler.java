@@ -112,7 +112,7 @@ public class CommandHandler {
         commandData.add(Commands.slash("submit", "Submit a drop for clan points")
                 .addOption(OptionType.ATTACHMENT, "screenshot", "Screenshot of the drop", true)
                 .addOptions(submitOptionData)
-                .addOption(OptionType.STRING, "teammates", "Party members"));
+                .addOption(OptionType.STRING, "teammates", "TAG THE DISCORD of any party members"));
 
         commandData.add(Commands.slash("points", "Manually manage member's clan points")
                 .addSubcommands(new SubcommandData("add", "Give points to a player")
