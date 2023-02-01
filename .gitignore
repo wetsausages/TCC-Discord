@@ -42,4 +42,5 @@ classpath/**
 out/.env
 out/data/**
 out/logs/**
+out/events/**
 *.prod

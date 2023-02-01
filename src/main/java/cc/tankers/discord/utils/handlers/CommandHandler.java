@@ -97,6 +97,9 @@ public class CommandHandler {
                 .addOption(OptionType.STRING, "item", "Item's name to search", true));
 
         // CC Handling
+        commandData.add(Commands.slash("add-member", "Add player to member list")
+                .addOption(OptionType.USER, "member", "Member to add", true));
+
         List<OptionData> submitOptionData = new ArrayList<>();
         for (String boss : cSQL.GetBosses()) {
             List<Command.Choice> itemChoices = new ArrayList<>();
@@ -200,6 +203,10 @@ public class CommandHandler {
             case "lookup" -> GameIntegrationHandler.PlayerLookup(event);
             case "price" -> GameIntegrationHandler.ItemLookup(event);
             case "submit" -> ClanIntegrationHandler.SubmitDrop(event);
+            case "add-member" -> {
+                if(!i.CheckPermission(event, 2)) return;
+                ClanIntegrationHandler.AddMember(event);
+            }
 
             case "points" -> {
                 if(!i.CheckPermission(event, 2)) return;

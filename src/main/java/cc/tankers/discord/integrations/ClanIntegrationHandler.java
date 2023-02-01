@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -30,6 +31,18 @@ import java.util.regex.Pattern;
 
 public class ClanIntegrationHandler {
     static ClanSQL sql = new ClanSQL();
+
+    public static void AddMember (SlashCommandInteraction event) {
+        String s = event.getOption("member").getAsMember().getNickname();
+        if (s == null) s = event.getOption("member").getAsUser().getName();
+        sql.AddMember(s);
+        UpdatePlayerDataEmbed(event.getJDA());
+        EmbedBuilder eb = new EmbedBuilder()
+                .setTitle("[Tankers] Add Player")
+                .setDescription("Added " + s + "!");
+        new EmbedUtil().ReplyEmbed(event, eb, true, false);
+    }
+
     public static void SubmitDrop (SlashCommandInteraction event) {
         // Get command data
         String screenshot = event.getOption("screenshot").getAsAttachment().getUrl();
@@ -467,38 +480,28 @@ public class ClanIntegrationHandler {
     }
 
     public static void UpdateDropOptions (JDA jda) {
-
-        List<OptionData> optionData = new ArrayList<>();
-        optionData.add(new OptionData(OptionType.ATTACHMENT, "screenshot", "Screenshot of the drop", true));
-
+        // Untested
+        List<OptionData> submitOptionData = new ArrayList<>();
+        submitOptionData.add(new OptionData(OptionType.ATTACHMENT, "screenshot", "Screenshot of the drop", true));
         for (String boss : sql.GetBosses()) {
             List<Command.Choice> itemChoices = new ArrayList<>();
             for (String item : sql.GetItems()) {
-                if (item.split(";")[2].equalsIgnoreCase(boss)) {
+                if (item.split(";")[2].equalsIgnoreCase(boss.split(";")[0])) {
                     String cleanItem = item.split(";")[0].toLowerCase().replace(" ", "-");
                     itemChoices.add(new Command.Choice(cleanItem, cleanItem));
                 }
             }
-            optionData.add(new OptionData(OptionType.STRING, boss.split(";")[0].toLowerCase().replace(" ","-"), "Submit drops from " + boss)
+            submitOptionData.add(new OptionData(OptionType.STRING, boss.split(";")[0].toLowerCase().replace(" ","-"), "Submit drops from " + boss.split(";")[0])
                     .addChoices(itemChoices));
         }
-
-        optionData.add(new OptionData(OptionType.USER, "teammate-1", "1st party member"));
-        optionData.add(new OptionData(OptionType.USER, "teammate-2", "2nd party member"));
-        optionData.add(new OptionData(OptionType.USER, "teammate-3", "3rd party member"));
-        optionData.add(new OptionData(OptionType.USER, "teammate-4", "4th party member"));
-        optionData.add(new OptionData(OptionType.USER, "teammate-5", "5th party member"));
-        optionData.add(new OptionData(OptionType.USER, "teammate-6", "6th party member"));
-        optionData.add(new OptionData(OptionType.USER, "teammate-7", "7th party member"));
-        optionData.add(new OptionData(OptionType.USER, "teammate-8", "8th party member"));
-        optionData.add(new OptionData(OptionType.USER, "teammate-9", "9th party member"));
+        submitOptionData.add(new OptionData(OptionType.STRING, "teammates", "TAG THE DISCORD of any party members"));
 
         try {
             List<Command> commandList = jda.retrieveCommands().submit().get();
             for (Command cmd : commandList) {
                 if (cmd.getName().equals("submit")) {
                     cmd.editCommand().clearOptions().queue();
-                    cmd.editCommand().addOptions(optionData).queue();
+                    cmd.editCommand().addOptions(submitOptionData).queue();
                 }
             }
         } catch (InterruptedException | ExecutionException e) {
