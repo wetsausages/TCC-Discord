@@ -1,5 +1,5 @@
 <h1 align="center">Tankers PvM Discord Bot</h1>
-<p align="center"> A multipurpose Discord bot for AVAS.cc</p>
+<p align="center"> A multipurpose Discord bot for Tankers PvM</p>
 
 # Features
 ### Clan
