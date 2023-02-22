@@ -35,6 +35,17 @@ public class ClanIntegrationHandler {
     public static void AddMember (SlashCommandInteraction event) {
         String s = event.getOption("member").getAsMember().getNickname();
         if (s == null) s = event.getOption("member").getAsUser().getName();
+
+        List<String> members = new ArrayList<>();
+        for (String member : sql.GetMembers()) members.add(member.split(";")[0]);
+        if (members.contains(s)) {
+            EmbedBuilder eb = new EmbedBuilder()
+                    .setTitle("[Tankers] Add Player")
+                    .setDescription("Player already added!");
+            new EmbedUtil().ReplyEmbed(event, eb, true, true);
+            return;
+        }
+
         sql.AddMember(s);
         UpdatePlayerDataEmbed(event.getJDA());
         EmbedBuilder eb = new EmbedBuilder()

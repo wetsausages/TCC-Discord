@@ -98,7 +98,8 @@ public class CommandHandler {
 
         // CC Handling
         commandData.add(Commands.slash("add-member", "Add player to member list")
-                .addOption(OptionType.USER, "member", "Member to add", true));
+                .addOption(OptionType.USER, "member", "Member to add", true)
+                .addOption(OptionType.BOOLEAN, "kots", "Add them to kots list?"));
 
         List<OptionData> submitOptionData = new ArrayList<>();
         for (String boss : cSQL.GetBosses()) {
@@ -205,6 +206,8 @@ public class CommandHandler {
             case "submit" -> ClanIntegrationHandler.SubmitDrop(event);
             case "add-member" -> {
                 if(!i.CheckPermission(event, 2)) return;
+                try { if(event.getOption("kots").getAsBoolean()) ClanEventHandler.AddMemberKOTS(event); return; }
+                catch (Exception ignored) {}
                 ClanIntegrationHandler.AddMember(event);
             }
 

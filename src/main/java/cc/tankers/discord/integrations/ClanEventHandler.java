@@ -191,6 +191,7 @@ public class ClanEventHandler {
         } catch (IOException e) {
             Logger.log("[-] Failed to archive PvM Challenge data!\n" + e, 1);
         }
+
         String playerBlob = "";
         String pointsBlob = "";
         int count = 0;
@@ -361,6 +362,55 @@ public class ClanEventHandler {
             UpdateKOTSData(jda);
         } catch (IOException e) {
             Logger.log("[-] Failed to load KOTS data!\n" + e, 1);
+        }
+    }
+
+    public static void AddMemberKOTS (SlashCommandInteraction event) {
+        String skill = Data.GetKOTSSkill();
+        if (skill.equals("none")) {
+            EmbedBuilder eb = new EmbedBuilder()
+                    .setTitle("[Tankers] Add KOTS Player")
+                    .setDescription("No KOTS event running!");
+            new EmbedUtil().ReplyEmbed(event, eb, true, true);
+            return;
+        }
+
+        String member = event.getOption("member").getAsMember().getNickname();
+        if (kotsStarting.containsKey(member)) {
+            EmbedBuilder eb = new EmbedBuilder()
+                    .setTitle("[Tankers] Add KOTS Player")
+                    .setDescription("Player already competing!");
+            new EmbedUtil().ReplyEmbed(event, eb, true, true);
+            return;
+        }
+
+        String requestURL = "https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=" + member;
+        try {
+            String[] data = GameIntegrationHandler.request(requestURL).split("\n");
+            String[] dataMap = { "Overall", "Attack", "Defence", "Strength", "Hitpoints", "Ranged", "Prayer", "Magic", "Cooking",
+                    "Woodcutting", "Fletching", "Fishing", "Firemaking", "Crafting", "Smithing", "Mining", "Herblore",
+                    "Agility", "Thieving", "Slayer", "Farming", "Runecrafting", "Hunter", "Construction" };
+
+            for (int i = 1; i < 24; i++) {
+                if (dataMap[i].equals(skill)) {
+                    kotsStarting.put(member, Integer.parseInt(data[i].split(",")[2]));
+                    break;
+                }
+            }
+
+            SaveKOTS();
+            UpdateKOTSData(event.getJDA());
+
+            EmbedBuilder eb = new EmbedBuilder()
+                    .setTitle("[Tankers] Add KOTS Player")
+                    .setDescription("Player added to KOTS!");
+            new EmbedUtil().ReplyEmbed(event, eb, true, false);
+        } catch (IOException e) {
+            EmbedBuilder eb = new EmbedBuilder()
+                    .setTitle("[Tankers] Add KOTS Player")
+                    .setDescription("Failed to add player to KOTS!");
+            new EmbedUtil().ReplyEmbed(event, eb, true, true);
+            Logger.log("Failed to add player to KOTS!\n" + e, 0);
         }
     }
 
