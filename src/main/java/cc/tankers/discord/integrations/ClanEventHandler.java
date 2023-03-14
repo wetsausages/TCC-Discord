@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.FutureTask;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -251,6 +252,7 @@ public class ClanEventHandler {
     }
 
     public static void UpdateKOTSData (JDA jda) {
+        FutureTask<Void> task = new FutureTask<>(() -> KOTSTimer(jda), null); // Create refresh timer
         String skill = Data.GetKOTSSkill();
 
         for (String key : kotsStarting.keySet()) {
@@ -266,7 +268,7 @@ public class ClanEventHandler {
                         break;
                     }
                 }
-            } catch (IOException e) { continue; }
+            } catch (IOException e) { new Thread(task).start(); }
         }
 
         kotsGains = Sort(kotsGains);
@@ -291,13 +293,17 @@ public class ClanEventHandler {
                 .setFooter("Last updated " + LocalDateTime.now().format(formatter));
         Data.GetEventDataChannel(jda).editMessageEmbedsById(Data.GetEventDataEmbed(),dataEB.build()).queue();
 
+        new Thread(task).start();
+    }
+
+    static void KOTSTimer (JDA jda) {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
                 UpdateKOTSData(jda);
             }
         };
-        timer.schedule(task, 30000L);
+        timer.schedule(task, 1000L);
     }
 
     public static void CloseKOTS(JDA jda) {
