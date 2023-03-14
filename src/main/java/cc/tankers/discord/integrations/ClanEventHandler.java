@@ -303,7 +303,7 @@ public class ClanEventHandler {
                 UpdateKOTSData(jda);
             }
         };
-        timer.schedule(task, 1000L);
+        timer.schedule(task, 60000L);
     }
 
     public static void CloseKOTS(JDA jda) {
