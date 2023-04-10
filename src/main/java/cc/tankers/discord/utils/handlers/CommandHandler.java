@@ -205,7 +205,7 @@ public class CommandHandler {
             case "price" -> GameIntegrationHandler.ItemLookup(event);
             case "submit" -> ClanIntegrationHandler.SubmitDrop(event);
             case "add-member" -> {
-                if(!i.CheckPermission(event, 2)) return;
+                if(!i.CheckPermission(event, 1)) return;
                 try { if(event.getOption("kots").getAsBoolean()) ClanEventHandler.AddMemberKOTS(event); return; }
                 catch (Exception ignored) {}
                 ClanIntegrationHandler.AddMember(event);
