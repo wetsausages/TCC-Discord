@@ -199,7 +199,7 @@ public class ClanEventHandler {
         for (String key : pcScoreboard.keySet()) {
             if (count == 5)
                 break;
-            playerBlob = playerBlob.concat(key + "\n");
+            playerBlob = playerBlob.concat((count+1) + ". " + key + "\n");
             pointsBlob = pointsBlob.concat("" + pcScoreboard.get(key) + "\n");
             count++;
         }
@@ -338,7 +338,7 @@ public class ClanEventHandler {
             if (kotsGains.get(key).equals(0)) continue;
             if (count == 3)
                 break;
-            playerBlob = playerBlob.concat(key + "\n");
+            playerBlob = playerBlob.concat((count+1) + ". " + key + "\n");
             pointsBlob = pointsBlob.concat("" + kotsGains.get(key) + "\n");
             count++;
         }
